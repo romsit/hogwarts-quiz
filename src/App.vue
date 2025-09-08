@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <Header />
-    <ChatBot msg="Welcome to Your Vue.js App" />
+    <ChatBot msg="Welcome to Hogwarts" />
     <Footer />
   </div>
 </template>
