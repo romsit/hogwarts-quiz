@@ -1,19 +1,21 @@
 Sorting Hat Quiz
 
-Welcome to the Sorting Hat Quiz — an interactive, chat‑based quiz inspired by the magical Sorting Hat from the Harry Potter universe. Built using Vue 3
+Welcome to the Sorting Hat Quiz - an interactive, chat-based quiz inspired by the magical Sorting Hat from the Harry Potter universe. Built using Vue 3
  with the Composition API, this project guides users through a series of questions in a friendly chat interface and assigns them to one of four houses based on their responses.
 
 Features
 
-🔮 Interactive chat UI – users answer questions through a conversational interface.
+The quiz is more than just a list of questions. It aims to be engaging and easy to customise:
 
-🧙 Personalized experience – the quiz asks for the user's name and greets them throughout the process.
+Interactive chat UI - users answer questions through a conversational interface.
 
-🎨 Smooth animations – questions and answers fade in/out for a polished feel.
+Personalized experience - the quiz asks for the user's name and greets them throughout the process.
 
-🏰 House allocation – scores are tallied for Gryffindor, Ravenclaw, Hufflepuff and Slytherin to determine your house.
+Smooth animations - questions and answers fade in/out for a polished feel.
 
-🔧 Easy customization – questions and scoring can be modified via a simple JavaScript file.
+House allocation - scores are tallied for Gryffindor, Ravenclaw, Hufflepuff and Slytherin to determine your house.
+
+Easy customisation - questions and scoring can be modified via a simple JavaScript file.
 
 Getting Started
 
@@ -31,7 +33,7 @@ Installation
 
 Clone the repository:
 
-git clone https://github.com/romsit/hogwarts-quiz
+git clone  https://github.com/romsit/hogwarts-quiz
 cd hogwarts-quiz
 
 
@@ -85,7 +87,7 @@ At present, there are no automated tests. Contributions that add unit or integra
 
 Project structure
 
-The high‑level directory layout is as follows:
+The high-level directory layout is as follows:
 
 .
 ├── public/               # Static public assets (favicon, index.html)
@@ -116,7 +118,7 @@ Feel free to rename houses or add new categories, but remember to update the sco
 
 Contributing
 
-Contributions are what make the open‑source community such an amazing place to learn, inspire and create. Any contributions you make to this project are greatly appreciated.
+Contributions are what make the open-source community such an amazing place to learn, inspire and create. Any contributions you make to this project are greatly appreciated.
 
 How to contribute
 
@@ -144,7 +146,7 @@ Reference open issues in your commits and pull requests when appropriate (e.g. F
 
 Include tests or examples when adding new features.
 
-Keep pull requests focused. If you’re fixing two unrelated issues, submit two separate PRs.
+Keep pull requests focused. If you're fixing two unrelated issues, submit two separate PRs.
 
 Be respectful and constructive in discussions. We value a friendly and inclusive environment.
 
@@ -153,7 +155,7 @@ If you are unsure about anything, feel free to open an issue to ask questions be
 Code of Conduct
 
 This project adopts the Contributor Covenant
- Code of Conduct. We expect everyone participating in the project to abide by it. Please report unacceptable behavior to the maintainer’s email listed below.
+ Code of Conduct. We expect everyone participating in the project to abide by it. Please report unacceptable behavior to the maintainer's email listed below.
 
 License
 
@@ -162,5 +164,7 @@ This project is licensed under the MIT License
 
 Contact
 
-Maintained by Romina – romihello@outlook.com
+Maintained by Romina - romihello@outlook.com
 . Feel free to contact us for support, questions or suggestions.
+
+This project is purely for educational and entertainment purposes and is not affiliated with or endorsed by J.K. Rowling, Warner Bros., or any related rights holders.
