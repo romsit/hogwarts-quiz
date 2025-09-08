@@ -1,49 +1,42 @@
 <template>
   <div class="flex justify-center p-4 sm:p-6">
-    <div
-      id="chat"
-      class="w-full max-w-6xl h-[80vh] bg-gray-100 rounded-xl p-4 sm:p-6 overflow-y-auto shadow-md flex flex-col"
-    >
-      <div v-for="(msg, i) in messages" :key="i" class="mb-4 flex flex-col">
-        <div
-          :class="[
-            'p-3 rounded-xl break-words max-w-[80%]',
-            msg.sender === 'bot'
-              ? 'bg-gray-200 self-start'
-              : 'bg-blue-600 text-white self-end ml-auto'
-          ]"
-        >
-          {{ msg.text }}
-        </div>
+    <div id="chat" class="w-full max-w-6xl h-[80vh] bg-gray-100 rounded-xl p-4 sm:p-6 overflow-y-auto shadow-md">
+      <!-- Transición en grupo para mensajes -->
+      <transition-group name="message" tag="div" class="flex flex-col">
+        <div v-for="(msg, i) in messages" :key="msg.id" class="mb-4 flex flex-col">
 
-        <!-- Opciones como botones -->
-        <div v-if="msg.options && !finished" class="flex flex-col mt-2 space-y-2">
-          <button
-            v-for="(opt, j) in msg.options"
-            :key="j"
-            @click="handleAnswer(opt)"
-            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {{ opt.title }}
-          </button>
-        </div>
+          <!-- Mensaje del usuario -->
+          <div v-if="msg.sender === 'user'"
+            class="p-3 rounded-xl break-words max-w-[80%] bg-blue-600 text-white self-end ml-auto">
+            {{ msg.text }}
+          </div>
 
-        <!-- Input para nombre -->
-        <div v-if="msg.input && !finished" class="mt-2 flex justify-end ">
-          <input
-            v-model="userNameInput"
-            @keyup.enter="submitName()"
-            placeholder="Type your name..."
-            class="border rounded px-3 py-2 w-48 mr-2"
-          />
-          <button
-            @click="submitName"
-            class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Submit
-          </button>
+          <!-- Mensaje del bot -->
+          <div v-else-if="msg.sender === 'bot'" class="p-3 rounded-xl break-words max-w-[80%] bg-gray-200 self-start">
+            {{ msg.text }}
+          </div>
+
+          <!-- Bloque de opciones del bot, animado con <transition> -->
+          <transition name="fade">
+            <div v-if="msg.options && !finished" class="flex flex-col mt-2 space-y-2">
+              <button v-for="(opt, j) in msg.options" :key="j" @click="handleAnswer(opt, i)"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                {{ opt.title }}
+              </button>
+            </div>
+          </transition>
+
+          <!-- Input para nombre -->
+          <div v-if="msg.input && !finished" class="mt-2 flex justify-end">
+            <input v-model="userNameInput" @keyup.enter="submitName" placeholder="Type your name..."
+              class="border rounded px-3 py-2 w-48 mr-2" />
+            <button @click="submitName"
+              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              Submit
+            </button>
+          </div>
         </div>
-      </div>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -53,45 +46,42 @@ import { ref, computed, nextTick, onMounted } from "vue";
 import questions from "../data/quiz.js";
 
 const messages = ref([
-  { sender: "bot", text: "Welcome to the Sorting Hat test! 🏰" },
+  { id: crypto.randomUUID(), sender: "bot", text: "Welcome to the Sorting Hat test! 🏰" },
 ]);
-
 const userNameInput = ref("");
 const userName = ref("");
 const currentQuestionIndex = ref(0);
 const scores = ref({ gryffindor: 0, ravenclaw: 0, hufflepuff: 0, slytherin: 0 });
 const finished = ref(false);
 
-// Inicial: pedir nombre
 onMounted(() => {
   messages.value.push({
+    id: crypto.randomUUID(),
     sender: "bot",
     text: "What's your name?",
     input: true,
   });
-  scrollToBottom();
 });
 
 function submitName() {
-  if (!userNameInput.value.trim()) return;
+  const name = userNameInput.value.trim();
+  if (!name) return;
 
-  userName.value = userNameInput.value.trim();
-  messages.value.push({ sender: "user", text: userName.value });
+  userName.value = name;
+  userNameInput.value = "";
+  messages.value.push({ id: crypto.randomUUID(), sender: "user", text: userName.value });
 
-  // Quitar el input del mensaje del bot
-  const lastBotIndex = messages.value
-    .slice()
-    .reverse()
-    .findIndex((msg) => msg.sender === "bot" && msg.input);
-  if (lastBotIndex !== -1) {
-    const realIndex = messages.value.length - 1 - lastBotIndex;
-    messages.value[realIndex].input = null;
+  // Eliminar el input
+  const index = messages.value.findIndex(msg => msg.input);
+  if (index !== -1) {
+    messages.value[index].input = null;
   }
 
-  // Mostrar primera pregunta del quiz
-  if (questions.length > 0) {
-    const firstQ = questions[0];
+  // Primera pregunta
+  const firstQ = questions[0];
+  if (firstQ) {
     messages.value.push({
+      id: crypto.randomUUID(),
       sender: "bot",
       text: `Hi ${userName.value}! Let's start the Sorting Hat quiz. ${firstQ.title}`,
       options: firstQ.answers,
@@ -101,55 +91,54 @@ function submitName() {
   scrollToBottom();
 }
 
-
-function handleAnswer(answer) {
+function handleAnswer(answer, msgIndex) {
   if (finished.value) return;
 
-  // Guardar la respuesta del usuario
-  messages.value.push({ sender: "user", text: answer.title });
+  // Ocultar opciones con una pequeña pausa para que la animación se perciba mejor
+  messages.value[msgIndex].options = null;
 
-  // Actualizar puntajes
-  for (let key in answer.scores) scores.value[key] += answer.scores[key];
+  // Mostrar respuesta de usuario
+  messages.value.push({ id: crypto.randomUUID(), sender: "user", text: answer.title });
 
-  // Quitar las opciones del mensaje anterior
-  const lastBotIndex = messages.value
-    .slice()
-    .reverse()
-    .findIndex((msg) => msg.sender === "bot" && msg.options);
-  if (lastBotIndex !== -1) {
-    // Como usamos reverse, calculamos el índice real
-    const realIndex = messages.value.length - 1 - lastBotIndex;
-    messages.value[realIndex].options = null;
+  // Actualizar puntuaciones
+  for (let key in answer.scores) {
+    scores.value[key] += answer.scores[key];
   }
 
-  // Pasar a la siguiente pregunta
+  // Mostrar siguiente pregunta o finalizar
   if (currentQuestionIndex.value < questions.length - 1) {
     currentQuestionIndex.value++;
     const nextQ = questions[currentQuestionIndex.value];
     setTimeout(() => {
       messages.value.push({
+        id: crypto.randomUUID(),
         sender: "bot",
         text: nextQ.title,
         options: nextQ.answers,
       });
       scrollToBottom();
-    }, 600);
+    }, 200);
   } else {
     finished.value = true;
     setTimeout(() => {
-      messages.value.push({ sender: "bot", text: `Test completed! 🥳` });
       messages.value.push({
+        id: crypto.randomUUID(),
         sender: "bot",
-        text: `Your house is: ${result.value.toUpperCase()} 🏆`,
+        text: "Test completed! 🥳",
+      });
+      messages.value.push({
+        id: crypto.randomUUID(),
+        sender: "bot",
+        text: `Your house is: ${capitalize(result.value)} 🏆`,
       });
       scrollToBottom();
-    }, 600);
+    }, 400);
   }
 }
 
-
 const result = computed(() => {
-  let maxScore = -Infinity, house = null;
+  let maxScore = -Infinity;
+  let house = "";
   for (let key in scores.value) {
     if (scores.value[key] > maxScore) {
       maxScore = scores.value[key];
@@ -159,10 +148,45 @@ const result = computed(() => {
   return house;
 });
 
+function capitalize(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 function scrollToBottom() {
   nextTick(() => {
     const chat = document.getElementById("chat");
-    if (chat) chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+    if (chat) {
+      chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+    }
   });
 }
 </script>
+
+<style scoped>
+/* Mensajes: efecto deslizamiento y desvanecido */
+.message-enter-active,
+.message-leave-active {
+  transition: all 0.4s ease;
+}
+
+.message-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.message-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* Opciones: fade-in/fade-out */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
