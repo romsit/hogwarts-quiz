@@ -37,6 +37,15 @@
           </div>
         </div>
       </transition-group>
+      <!-- Botón para rehacer el test -->
+      <div v-if="finished" class="mt-4 flex justify-center">
+        <button
+          @click="resetQuiz"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Retake the test
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -54,14 +63,31 @@ const currentQuestionIndex = ref(0);
 const scores = ref({ gryffindor: 0, ravenclaw: 0, hufflepuff: 0, slytherin: 0 });
 const finished = ref(false);
 
-onMounted(() => {
-  messages.value.push({
-    id: crypto.randomUUID(),
-    sender: "bot",
-    text: "What's your name?",
-    input: true,
-  });
-});
+// Inicializa la conversación (mensaje de bienvenida y petición de nombre)
+function initConversation() {
+  messages.value = [
+    { id: crypto.randomUUID(), sender: "bot", text: "Welcome to the Sorting Hat test! 🏰" },
+    {
+      id: crypto.randomUUID(),
+      sender: "bot",
+      text: "What's your name?",
+      input: true,
+    },
+  ];
+}
+
+// Llama a initConversation al montar el componente
+onMounted(() => initConversation());
+
+// Define resetQuiz para reiniciar todas las variables y mostrar de nuevo la conversación inicial
+function resetQuiz() {
+  userNameInput.value = "";
+  userName.value = "";
+  currentQuestionIndex.value = 0;
+  scores.value = { gryffindor: 0, ravenclaw: 0, hufflepuff: 0, slytherin: 0 };
+  finished.value = false;
+  initConversation();
+}
 
 function submitName() {
   const name = userNameInput.value.trim();
