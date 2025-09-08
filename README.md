@@ -162,5 +162,5 @@ This project is licensed under the MIT License
 
 Contact
 
-Maintained by Your Name – romihello@outlook.com
+Maintained by Romina – romihello@outlook.com
 . Feel free to contact us for support, questions or suggestions.
