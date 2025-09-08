@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, onMounted } from "vue";
+import { ref, computed, nextTick, onMounted, watch } from "vue";
 import questions from "../data/quiz.js";
 
 const messages = ref([
@@ -62,6 +62,9 @@ const userName = ref("");
 const currentQuestionIndex = ref(0);
 const scores = ref({ gryffindor: 0, ravenclaw: 0, hufflepuff: 0, slytherin: 0 });
 const finished = ref(false);
+
+// Flag para saber si estamos reiniciando y así evitar el scroll automático.
+const isResetting = ref(false);
 
 // Inicializa la conversación (mensaje de bienvenida y petición de nombre)
 function initConversation() {
@@ -79,14 +82,33 @@ function initConversation() {
 // Llama a initConversation al montar el componente
 onMounted(() => initConversation());
 
-// Define resetQuiz para reiniciar todas las variables y mostrar de nuevo la conversación inicial
+// Scroll automático cuando se añaden mensajes, salvo si estamos reiniciando
+watch(messages, () => {
+  if (!isResetting.value) {
+    scrollToBottom();
+  }
+});
+
+// Llamada al pulsar el botón “Rehacer el test”
 function resetQuiz() {
+  isResetting.value = true;
+
+  // Restablecer estados
   userNameInput.value = "";
   userName.value = "";
   currentQuestionIndex.value = 0;
   scores.value = { gryffindor: 0, ravenclaw: 0, hufflepuff: 0, slytherin: 0 };
   finished.value = false;
+
+  // Reemplazar mensajes con los iniciales
   initConversation();
+
+  // Esperar a que se renderice y forzar scroll al principio
+  nextTick(() => {
+    scrollToTop();
+    // Reactivar autoscroll para las siguientes interacciones
+    isResetting.value = false;
+  });
 }
 
 function submitName() {
@@ -186,6 +208,14 @@ function scrollToBottom() {
     }
   });
 }
+
+function scrollToTop() {
+  const chat = document.getElementById("chat");
+  if (chat) {
+    chat.scrollTo({ top: 0, behavior: "auto" });
+  }
+}
+
 </script>
 
 <style scoped>
