@@ -33,7 +33,7 @@ Installation
 
 Clone the repository:
 
-git clone  https://github.com/romsit/hogwarts-quiz
+git clone https://github.com/romsit/hogwarts-quiz
 cd hogwarts-quiz
 
 
