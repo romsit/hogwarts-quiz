@@ -90,15 +90,15 @@ Project structure
 The high-level directory layout is as follows:
 
 .
-├── public/               # Static public assets (favicon, index.html)
+├── public/ # Static public assets (favicon, index.html)
 ├── src/
-│   ├── assets/           # Images, icons and global styles
-│   ├── components/       # Vue components (e.g. chat interface)
-│   ├── data/             # Static data (e.g. questions and scoring)
-│   ├── App.vue           # Root component
-│   └── main.js           # Application entry point
+│ ├── assets/ # Imágenes, iconos y estilos globales
+│ ├── components/ # Componentes Vue (p. ej., interfaz de chat)
+│ ├── data/ # Datos estáticos (preguntas y puntuación)
+│ ├── App.vue # Componente raíz
+│ └── main.js # Punto de entrada de la aplicación
 ├── package.json
-├── vite.config.js        # Build and dev server configuration (if using Vite)
+├── vite.config.js # Configuración de build y servidor de desarrollo (Vite)
 └── ...
 
 
